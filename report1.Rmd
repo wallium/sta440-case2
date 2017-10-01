@@ -1,12 +1,38 @@
 ---
 title: "STA 440 Case 2"
-author: "William Yang"
+author: "Annie Lott, Wuming Zhang, William Yang"
 date: "October 1, 2017"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+require(gridExtra)
+
+kellydat = read.table("kellydat.txt", header = TRUE)
+kellydat$sn0 = ifelse(kellydat$sn1 + kellydat$sn2 + kellydat$sn3 + kellydat$all4, 0, 1)
+```
+
+# Exploratory Data Analysis
+
+## Histograms of each Indicator
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+all = ggplot(data=kellydat, aes(nctdel)) + geom_histogram() + ggtitle("all patients")
+fail_1 = ggplot(data=kellydat[kellydat$fail == 1,], aes(nctdel)) + geom_histogram() + ggtitle("fail = 1")
+fail_0 = ggplot(data=kellydat[kellydat$fail == 0,], aes(nctdel)) + geom_histogram() + ggtitle("fail = 0")
+male_1 = ggplot(data=kellydat[kellydat$male == 1,], aes(nctdel)) + geom_histogram() + ggtitle("male = 1")
+male_0 = ggplot(data=kellydat[kellydat$male == 0,], aes(nctdel)) + geom_histogram() + ggtitle("male = 0")
+hisp_1 = ggplot(data=kellydat[kellydat$hisp == 1,], aes(nctdel)) + geom_histogram() + ggtitle("hisp = 1")
+hisp_0 = ggplot(data=kellydat[kellydat$hisp == 0,], aes(nctdel)) + geom_histogram() + ggtitle("hisp = 0")
+sn0_1 = ggplot(data=kellydat[kellydat$sn0 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn0 = 1")
+sn1_1 = ggplot(data=kellydat[kellydat$sn1 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn1 = 1")
+sn2_1 = ggplot(data=kellydat[kellydat$sn2 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn2 = 1")
+sn3_1 = ggplot(data=kellydat[kellydat$sn3 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn3 = 1")
+all4_1 = ggplot(data=kellydat[kellydat$all4 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("all4 = 1")
+
+grid.arrange(all, fail_1, fail_0, male_1, male_0, hisp_1, hisp_0, sn0_1, sn1_1, sn2_1, sn3_1, all4_1, ncol=3)
 ```
 
 
