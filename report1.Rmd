@@ -5,6 +5,11 @@ date: "October 1, 2017"
 output: pdf_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
 #Goals and Data Description
 
 Getting treatment quickly after a stroke is crucial to a positive long-term prognosis. For emergency room patients who may have had a stroke, we are exploring the variables that influence the time it takes for these patients to receive a neurological assessment. The time from getting to the emergency room to receiving a neurological assessment, such as a CT scan, factors into the total time it takes for the patient to get treated for a stroke. This has a direct impact on the stroke patient’s subsequent neurological health and survival.
@@ -13,11 +18,7 @@ Based on data from 335 emergency room patients with mild to moderate motor impai
 
 For ease of analysis, we cleaned the data by introducing a numerical variable for the number of symptoms for each patient- zero, one, two, three, or four- rather than using binary variables for whether a particular number of symptoms were displayed or not. There were no missing data to recode for our analysis.
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-
-
+```{r}
 data <- read.table("kellydat.txt", header = TRUE)
 
 
@@ -29,6 +30,8 @@ require(gridExtra)
 kellydat = read.table("kellydat.txt", header = TRUE)
 kellydat$sn0 = ifelse(kellydat$sn1 + kellydat$sn2 + kellydat$sn3 + kellydat$all4, 0, 1)
 ```
+
+
 # Exploratory Data Analysis
 
 
