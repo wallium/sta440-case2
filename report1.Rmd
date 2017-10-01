@@ -7,6 +7,13 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+
+data <- read.table("kellydat.txt", header = TRUE)
+
+
+ggplot(data = data) + geom_histogram(aes(x = nctdel)) +
+  facet_wrap(~male)
 ```
 
 
