@@ -16,6 +16,7 @@ kellydat$sn0 = ifelse(kellydat$sn1 + kellydat$sn2 + kellydat$sn3 + kellydat$all4
 
 # Exploratory Data Analysis
 
+
 ## Histograms of each Indicator
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -26,13 +27,15 @@ male_1 = ggplot(data=kellydat[kellydat$male == 1,], aes(nctdel)) + geom_histogra
 male_0 = ggplot(data=kellydat[kellydat$male == 0,], aes(nctdel)) + geom_histogram() + ggtitle("male = 0")
 hisp_1 = ggplot(data=kellydat[kellydat$hisp == 1,], aes(nctdel)) + geom_histogram() + ggtitle("hisp = 1")
 hisp_0 = ggplot(data=kellydat[kellydat$hisp == 0,], aes(nctdel)) + geom_histogram() + ggtitle("hisp = 0")
-sn0_1 = ggplot(data=kellydat[kellydat$sn0 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn0 = 1")
-sn1_1 = ggplot(data=kellydat[kellydat$sn1 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn1 = 1")
-sn2_1 = ggplot(data=kellydat[kellydat$sn2 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn2 = 1")
-sn3_1 = ggplot(data=kellydat[kellydat$sn3 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("sn3 = 1")
-all4_1 = ggplot(data=kellydat[kellydat$all4 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("all4 = 1")
+sn0_1 = ggplot(data=kellydat[kellydat$sn0 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("0 symptoms")
+sn1_1 = ggplot(data=kellydat[kellydat$sn1 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("1 symptom")
+sn2_1 = ggplot(data=kellydat[kellydat$sn2 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("2 symptoms")
+sn3_1 = ggplot(data=kellydat[kellydat$sn3 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("3 symptoms")
+all4_1 = ggplot(data=kellydat[kellydat$all4 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("4 symptoms")
 
 grid.arrange(all, fail_1, fail_0, male_1, male_0, hisp_1, hisp_0, sn0_1, sn1_1, sn2_1, sn3_1, all4_1, ncol=3)
 ```
+
+To get a better sense of the distributions in the data, we first plot histograms of the nctdel times for each level of all the variables. We notice some general trends here - nctdel time seems to go down with more symptoms, the overall distribution of times for all patients is right-skewed with a mean around 1.5. However, we note that there are only 9 data points for hispanic patients, and only 6 for patients with all 4 symptoms. Inference around these variables will therefore have high variance.
 
 
