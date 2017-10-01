@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 ```
 
-#Goals and Data Description
+# Goals and Data Description
 
 Getting treatment quickly after a stroke is crucial to a positive long-term prognosis. For emergency room patients who may have had a stroke, we are exploring the variables that influence the time it takes for these patients to receive a neurological assessment. The time from getting to the emergency room to receiving a neurological assessment, such as a CT scan, factors into the total time it takes for the patient to get treated for a stroke. This has a direct impact on the stroke patient’s subsequent neurological health and survival.
 
@@ -52,7 +52,7 @@ sn3_1 = ggplot(data=kellydat[kellydat$sn3 == 1,], aes(nctdel)) + geom_histogram(
 all4_1 = ggplot(data=kellydat[kellydat$all4 == 1,], aes(nctdel)) + geom_histogram() + ggtitle("4 symptoms")
 
 grid.arrange(all, fail_1, fail_0, male_1, male_0, hisp_1, hisp_0, sn0_1, sn1_1, sn2_1, sn3_1, all4_1, ncol=3)
->>>>>>> 65093a0a9426cefbe6e79f22abbd8e28c4d0d211
+
 ```
 
 To get a better sense of the distributions in the data, we first plot histograms of the nctdel times for each level of all the variables. We notice some general trends here - nctdel time seems to go down with more symptoms, the overall distribution of times for all patients is right-skewed with a mean around 1.5. However, we note that there are only 9 data points for hispanic patients, and only 6 for patients with all 4 symptoms. Inference around these variables will therefore have high variance.
