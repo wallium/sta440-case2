@@ -31,6 +31,24 @@ kellydat = read.table("kellydat.txt", header = TRUE)
 kellydat$sn0 = ifelse(kellydat$sn1 + kellydat$sn2 + kellydat$sn3 + kellydat$all4, 0, 1)
 ```
 
+# Data Cleaning
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+kellydat$sympton = rep(0, length(kellydat$sn1))
+for (i in 1:length(kellydat$nctdel)){
+  if (kellydat$sn1[i] == 1){
+    kellydat$sympton[i] = 1
+  }
+  if (kellydat$sn2[i] == 1){
+    kellydat$sympton[i] = 2
+  } 
+  if (kellydat$sn3[i] == 1){
+    kellydat$sympton[i] = 3
+  }
+  if (kellydat$all4[i] == 1){
+    kellydat$sympton[i] = 4
+  }
+}
+```
 
 # Exploratory Data Analysis
 
@@ -56,5 +74,12 @@ grid.arrange(all, fail_1, fail_0, male_1, male_0, hisp_1, hisp_0, sn0_1, sn1_1, 
 ```
 
 To get a better sense of the distributions in the data, we first plot histograms of the nctdel times for each level of all the variables. We notice some general trends here - nctdel time seems to go down with more symptoms, the overall distribution of times for all patients is right-skewed with a mean around 1.5. However, we note that there are only 9 data points for hispanic patients, and only 6 for patients with all 4 symptoms. Inference around these variables will therefore have high variance.
+
+# Correlation between Assessment Time and Number of Symptons
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(data = kellydat) + 
+  geom_smooth(mapping = aes(x = sympton, y = nctdel))
+```
+To further explore the possible correlation between the nctdel time and number of symtons, we plot a smooth fitted line of nctdel time vs sympton. We can observe that the nctdel time is likely to be shorter for patients with more symptoms.
 
 
