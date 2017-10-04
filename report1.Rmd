@@ -130,3 +130,8 @@ summary(cox)
 ```
 
 An initial naive implementation of the model on all the predictors does not identify any of them as having a significant effect, so adjustments to the model and data will be necessary to produce meaningful results.
+
+
+# Contributions
+
+William plotted and analyzed histograms of each level of each indicator as part of the EDA and helped write potential modeling approaches. Wuming plotted the correlation between assessment time and number of symptoms curve and the Kaplan-Meier curve and helped write up some discussion about the Kaplan-Meier curve.
