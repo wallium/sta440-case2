@@ -19,7 +19,7 @@ Based on data from 335 emergency room patients with mild to moderate motor impai
 
 For ease of analysis, we cleaned the data by introducing a numerical variable for the number of symptoms for each patient- zero, one, two, three, or four- rather than using binary variables for whether a particular number of symptoms were displayed or not. There were no missing data to recode for our analysis.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 data <- read.table("kellydat.txt", header = TRUE)
 
 require(gridExtra)
@@ -136,7 +136,7 @@ An initial naive implementation of the model on all the predictors does not iden
 While we have decided to use the Cox Proportional Hazard Model to represent our data, there are other possible modeling approaches, such a Bayesian survival analysis based on the Weibull distribution. In this approach, a prior is given for a Weibull regression model, and a posterior is derived using Markov Chain Monte Carlo. We will use the Cox Proportional Hazard Model because it is simpler to implement. 
 
 # References
-“Mann-Whitney-Wilcoxon Test.” R Tutorial, 2017, www.r-tutor.com/elementary-statistics/non-parametric-methods/mann-whitney-wilcoxon-test. 
+'Mann-Whitney-Wilcoxon Test.' R Tutorial, 2017, www.r-tutor.com/elementary-statistics/non-parametric-methods/mann-whitney-wilcoxon-test. 
 
 # Contributions
 
