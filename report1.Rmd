@@ -72,7 +72,7 @@ grid.arrange(all, fail_1, fail_0, male_1, male_0, hisp_1, hisp_0, sn0_1, sn1_1, 
 
 To get a better sense of the distributions in the data, we first plot histograms of the nctdel times for each level of all the variables. We notice some general trends here - nctdel time seems to go down with more symptoms, the overall distribution of times for all patients is right-skewed with a mean around 1.5. However, we note that there are only 9 data points for hispanic patients, and only 6 for patients with all 4 symptoms. Inference around these variables will therefore have high variance.
 
-# Correlation between Assessment Time and Number of symptoms
+# Correlation between Waiting Time and Number of symptoms
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(data = kellydat) + 
 geom_smooth(mapping = aes(x = symptom, y = nctdel))
