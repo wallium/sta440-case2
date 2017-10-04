@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup,echo = FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
+library(survival)
 ```
 
 # Goals and Data Description
@@ -115,3 +116,18 @@ wilcox.test(nctdel ~ hisp, data = kellydat)
 ```
 
 To perform an initial inferential analysis evaluating the impact of clinical presentation, gender, ethnicity, and race on time to neurological assessment, our first thought was to use two-sample t-tests to compare the time to neurological assessment for the levels of this study's different factors (sex, race, ethnicity, and number of symptoms). However, two-sample t-tests require normal distributions of the wait time for the levels of the variables, and we know from the exploratory data analysis that many of these distributions are instead right-skewed. Additionally, these distributions are cut off at zero, because there is no such thing as negative wait times. We therefore used a nonparametric Mann-Whitney-Wilcoxon test to investigate the differences in wait time by variable. We assumed that the distributions are independent, which is reasonable, but we need not assume that they are normal. The results of the Mann-Whitney-Wilcoxon tests show that there is no significant difference in wait time for males versus females, black people versus non-black people, hispanic people versus non-hispanic people, and people showing no symptoms versus people showing four symptoms. We only compared people displaying no symptoms, the minimum, to people showing four symptoms, the maximum, rather than comparing all the combinations of zero, one, two, three, or four symptoms because it is bad practice to run too many tests on one variable. We thought that if there was a difference in wait times among people showing different symptoms, it would be most evident between those with no symptoms and those with the maximum number of symptoms. However, there seems to be no significant differences in wait time associated any of the variables, in our preliminary analysis. This preliminary analysis is limited in that it only considers differences in the mean wait time between categories, rather than the survival curves overall. 
+
+
+# Modeling Approaches
+
+## Cox Proportional Hazards Model
+
+One modeling approach we can take is fitting a Cox proportional hazards model for survival time to the dataset. We can use this to measure the effect that each level of the predictor variables has on the time to neurological assessment. 
+
+```{r, echo=FALSE}
+d3 = Surv(kellydat$nctdel, kellydat$fail)
+cox = coxph(formula = d3 ~ black + male + hisp + symptom, data = kellydat)
+summary(cox)
+```
+
+An initial naive implementation of the model on all the predictors does not identify any of them as having a significant effect, so adjustments to the model and data will be necessary to produce meaningful results.
