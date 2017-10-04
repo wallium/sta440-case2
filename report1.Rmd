@@ -87,25 +87,24 @@ d2 = Surv(time=kellydat$nctdel, event=kellydat$fail)
 
 km1 = survfit(d2 ~ kellydat$male)
 par(mar=c(4.5, 4.5, 0.5, 0.5))
-plot(km1, col = c("red", "blue"), xlab = "time", ylab = "cum. prob. of wait time (%)")
+plot(km1, col = c("red", "blue"), xlab = "time", ylab = "prob of survival (%)")
 legend(15, 1.0, c("male", "female"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue","red"))
 
 km2 = survfit(d2 ~ kellydat$black)
-plot(km2, col = c("red", "blue"), xlab = "time", ylab = "cum. prob. of wait time (%)")
+plot(km2, col = c("red", "blue"), xlab = "time", ylab = "prob of survival (%)")
 legend(13, 1.0, c("black", "not black"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue","red"))
 
 km3 = survfit(d2 ~ kellydat$hisp)
 par(mar=c(4.5, 4.5, 0.5, 0.5))
-plot(km3, col = c("red", "blue"), xlab = "time", ylab = "cum. prob. of wait time (%)")
+plot(km3, col = c("red", "blue"), xlab = "time", ylab = "prob of survival (%)")
 legend(11, 1.0, c("hispanic", "not hispanic"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue","red"))
 
 km4 = survfit(d2 ~ kellydat$symptom)
-plot(km4, col = c("red", "blue", "green", "yellow", "black"), xlab = "time", ylab = "cum. prob. of wait time (%)")
+plot(km4, col = c("red", "blue", "green", "yellow", "black"), xlab = "time", ylab = "prob of survival (%)")
 legend(11, 1.0, c("no symptom", "1 symptom", "2 symptoms", "3 symptoms", "4 symptoms"), lty=c(1,1), lwd=c(2.5,2.5),col=c("red", "blue", "green", "yellow", "black"))
 ```
 
-WUMING REWRITE
-The survival curves for males versus females look almost the same, suggesting that there is no difference in wait times between the sexes. The survival curves for black patients versus non-black patients look a little different, with the wait time dropping off slightly more quickly for non-black patients, but the difference is not substantial. There is a big difference between the survival curves for hispanic patients versus non-hispanic patients, but this difference may arise because there is so little data on hispanic patients. There seems to be large differences in the curves for the number of symptoms displayed, with most people having four symptoms being seen before about 2 time units, while people with no symptoms had a much less dramatic drop-off in time, meaning that they were generally seen later. 
+Note that in our case, survival means that the patient still keeps waiting. The survival curves for males versus females look almost the same, suggesting that there is no significant difference in their chance of waiting at varied time. The survival curves for black patients versus non-black patients look a little different, with the probability of still waiting dropping off slightly more quickly for non-black patients as waiting time increases, but the difference is not substantial. There is a big difference between the survival curves for hispanic patients versus non-hispanic patients, but this difference may arise because there is so little data on hispanic patients. There seems to be large differences in the curves for the number of symptoms displayed, with most people having four symptoms being seen before about 2 time units, while people with no symptoms had a much less dramatic drop-off in the probability of still waiting, meaning that they were generally seen later. 
 ```{r, echo = FALSE}
 sympts <- kellydat[kellydat$symptom %in% c(0,4),]
 sympts$zero.four <- ifelse(sympts$symptom == 4, 1, 0)
