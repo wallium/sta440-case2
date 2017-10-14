@@ -72,7 +72,7 @@ grid.arrange(all, fail_1, fail_0, male_1, male_0, hisp_1, hisp_0, sn0_1, sn1_1, 
 
 To get a better sense of the distributions in the data, we first plot histograms of the nctdel times for each level of all the variables. We notice some general trends here - nctdel time seems to go down with more symptoms, the overall distribution of times for all patients is right-skewed with a mean around 1.5. However, we note that there are only 9 data points for hispanic patients, and only 6 for patients with all 4 symptoms. Inference around these variables will therefore have high variance.
 
-# Correlation between Assessment Time and Number of symptoms
+# Correlation between Waiting Time and Number of symptoms
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(data = kellydat) + 
 geom_smooth(mapping = aes(x = symptom, y = nctdel))
@@ -140,4 +140,4 @@ While we have decided to use the Cox Proportional Hazard Model to represent our 
 
 # Contributions
 
-William plotted and analyzed histograms of each level of each indicator as part of the EDA and helped write potential modeling approaches. Wuming plotted the correlation between assessment time and number of symptoms curve and the Kaplan-Meier curve and helped write up some discussion about the Kaplan-Meier curve. Annie wrote the Goals and Data Description section and contributed the section on the Mann-Whitney-Wilcoxon test, and helped with the Modeling Approaches section. 
+William plotted and analyzed histograms of each level of each indicator as part of the EDA and helped write potential modeling approaches. Wuming plotted the correlation between waiting time and number of symptoms curve and the Kaplan-Meier curve and helped write up some discussion about the Kaplan-Meier curve. Annie wrote the Goals and Data Description section and contributed the section on the Mann-Whitney-Wilcoxon test, and helped with the Modeling Approaches section. 
