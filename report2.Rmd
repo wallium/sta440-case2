@@ -206,4 +206,4 @@ In our next report, we hope to visualize the hazard curves for our models to bet
 
 
 # Contributions
-William and Wuming both helped transform the data for implementing the generalized linear model and the generalized linear model with kernel regression. Wuming and William wrote the code to use generalized linear models with and without kernel regression as well. Annie wrote the text for the conclusion and model approaches as well as added model analysis.  
+William and Wuming both helped transform the data for implementing the generalized linear model and the generalized linear model with kernel regression. Wuming and William wrote the code to use generalized linear models with and without kernel regression as well. Annie wrote the text for the conclusion and model approaches as well as analyzed the model.  
