@@ -201,7 +201,7 @@ Even though our models show that most explanatory variables have no statisticall
 In our next report, we hope to visualize the hazard curves for our models to better understand the process of waiting for a clinical assessment for a stroke. We also need to analyze different variations of each model to find the best fit. It may be that if we were to choose different kernel weights for our generalized linear model with kernel regression, the predictor of having all four symptoms of a stroke may show a statistically significant association with wait times in the ER. 
 
 # References
-“ Introduction to Generalized Linear Models.” \it{STAT 504}, Eberly College of Science at Penn State, onlinecourses.science.psu.edu/stat504/node/216.  
+“ Introduction to Generalized Linear Models.” \textit{STAT 504}, Eberly College of Science at Penn State, onlinecourses.science.psu.edu/stat504/node/216.  
 
 
 
