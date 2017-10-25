@@ -190,13 +190,52 @@ for (j in 287:length(times)){
                                                       d[j,]))
 }
 m2 <- glm(y ~ 0 + ., data=d2, family="binomial")
-summary(m2)
+# Full vs reduced
+m3 <- glm(y ~ 0 + X1 + X2 + X3 + X4 + X5 + X6 + X7 + male + black + hisp, data=d2, family="binomial")
+anova(m2,m3)
 
-hazard.logodds <- predict(m2, newdata = data.frame(test.data))
-hazard <- exp(hazard.logodds)/(1+exp(hazard.logodds))
-plot(1:length(hazard), hazard, type='l',
+## Hazard Plot
+dt_1 <- d[3,]
+dt_1$nctdel <- total_bins
+dt_1$fail <- 1
+dt_1$male <- 0
+dt_1$black <- 0
+dt_1$hisp <- 0
+dt_1$sn1 <- 1
+dt_1$sn2 <- 0
+dt_1$sn3 <- 0
+dt_1$all4 <- 0
+dt_1$sn0 <- 0
+dt_1$symptom <- 1
+dt_1 <- kernel.transformation(dt_1$nctdel, dt_1$fail, total_bins, dt_1)
+
+dt_2 <- d[3,]
+dt_2$nctdel <- total_bins
+dt_2$fail <- 1
+dt_2$male <- 0
+dt_2$black <- 0
+dt_2$hisp <- 0
+dt_2$sn1 <- 0
+dt_2$sn2 <- 0
+dt_2$sn3 <- 0
+dt_2$all4 <- 1
+dt_2$sn0 <- 0
+dt_2$symptom <- 1
+dt_2 <- kernel.transformation(dt_2$nctdel, dt_2$fail, total_bins, dt_2)
+
+hazard.logodds.1 <- predict(m2, newdata = dt_1)
+hazard.1 <- exp(hazard.logodds.1)/(1+exp(hazard.logodds.1))
+
+hazard.logodds.2 <- predict(m2, newdata = dt_2)
+hazard.2 <- exp(hazard.logodds.2)/(1+exp(hazard.logodds.2))
+
+plot(1:length(hazard.1), hazard.1, type='l', ylim=range(c(0,1)), col = c('blue'),
      xlab = "Time Bin",
      ylab = "Hazard")
+
+lines(1:length(hazard.2), hazard.2, type='l', col = c('red'))
+legend("topright", c("no symptom", "4 symptoms"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+
 ```
 Based on the summary of the generalized linear model with kernel regression, none of the coefficients for the explanatory variables of race, ethnicity, gender, or number of symptoms are significant, contrasting with the results for the generalized linear model without kernel regression. 
 
