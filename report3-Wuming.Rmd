@@ -201,7 +201,7 @@ anova(m2,m3,test="Chisq")
 anova(m2,m4,test="Chisq")
 
 ## Hazard Plot Male vs. Female for Non-black and Non-hispanic
-par(mfrow=c(2,2))
+par(mfrow=c(2,2), oma=c(0,0,2,0))
 dt_0 <- d[1,]
 dt_0$nctdel <- total_bins
 dt_0$fail <- 1
@@ -241,7 +241,7 @@ plot(1:length(hazard.0), hazard.0, type='l', ylim=range(c(0,1)), col = c('blue')
      ylab = "Hazard",
      lwd=2)
 lines(1:length(hazard.1), hazard.1, type='l', col = c('red'), lwd=2)
-legend("topright", c("Female", "Male"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+legend(x=10, y=1, c("Female", "Male"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
 
 ## Hazard Plot Black vs. Non-black for Female and Non-hispanic with 1 Symptom
 dt_0 <- d[1,]
@@ -283,7 +283,7 @@ plot(1:length(hazard.0), hazard.0, type='l', ylim=range(c(0,1)), col = c('blue')
      ylab = "Hazard",
      lwd=2)
 lines(1:length(hazard.1), hazard.1, type='l', col = c('red'), lwd=2)
-legend("topright", c("Non-black", "Black"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+legend(x=8, y=1, c("Non-black", "Black"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
 
 ## Hazard Plot Hispanic vs. Non-hispanic for Female and Non-black with 1 Symptom
 dt_0 <- d[1,]
@@ -325,7 +325,7 @@ plot(1:length(hazard.0), hazard.0, type='l', ylim=range(c(0,1)), col = c('blue')
      ylab = "Hazard",
      lwd=2)
 lines(1:length(hazard.1), hazard.1, type='l', col = c('red'), lwd=2)
-legend("topright", c("Non-hispanic", "Hispanic"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+legend(x=8,y=1, c("Non-hispanic", "Hispanic"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
 
 ## Hazard Plot Symptom (Plotted using the reduced model that takes out black, hisp, and male)
 dt_0 <- d[1,]
@@ -421,7 +421,7 @@ lines(1:length(hazard.1), hazard.1, type='l', col = c('orange'), lwd=2)
 lines(1:length(hazard.2), hazard.2, type='l', col = c('red'), lwd=2)
 lines(1:length(hazard.3), hazard.3, type='l', col = c('green'), lwd=2)
 lines(1:length(hazard.4), hazard.4, type='l', col = c('yellow'), lwd=2)
-legend("topright", c("0 symptom", "1 symptom", "2 symptoms", "3 symptoms", "4 symptoms"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "orange", "red", "green", "yellow"))
+legend(x=16,y=1,cex = 0.6, c("0 symptom", "1 symptom", "2 symptoms", "3 symptoms", "4 symptoms"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "orange", "red", "green", "yellow"))
 title("Hazard Plot", outer=TRUE) 
 
 ```
@@ -444,7 +444,7 @@ Even though our models show that most explanatory variables have no statisticall
 In our next report, we hope to visualize the hazard curves for our models to better understand the process of waiting for a clinical assessment for a stroke. We also need to analyze different variations of each model to find the best fit. It may be that if we were to choose different kernel weights for our generalized linear model with kernel regression, the predictor of having all four symptoms of a stroke may show a statistically significant association with wait times in the ER. 
 
 # References
-“ Introduction to Generalized Linear Models.” \textit{STAT 504}, Eberly College of Science at Penn State, onlinecourses.science.psu.edu/stat504/node/216.  
+"Introduction to Generalized Linear Models." \textit{STAT 504}, Eberly College of Science at Penn State, onlinecourses.science.psu.edu/stat504/node/216.  
 
 
 
