@@ -1,7 +1,7 @@
 ---
 title: "STA 440 Case 2"
 author: "Annie Lott, Wuming Zhang, William Yang"
-date: "October 18, 2017"
+date: "October 27, 2017"
 output: pdf_document
 ---
 
@@ -28,7 +28,7 @@ kellydat$sn0 = ifelse(kellydat$sn1 + kellydat$sn2 + kellydat$sn3 + kellydat$all4
 
 # Data Cleaning
 
-For ease of analysis, we cleaned the data by introducing a numerical variable for the number of symptoms for each patient- zero, one, two, three, or four- rather than using binary variables for whether a particular number of symptoms were displayed or not. There were no missing data to recode for our analysis.
+For ease of analysis, we cleaned the data by introducing a categorical variable for the number of symptoms for each patient- zero, one, two, three, or four- rather than using binary variables for whether a particular number of symptoms were displayed or not. We treat this variable as a categorical variable rather than a continuous variable, because we predict that the impact of having 0 symptoms versus 1 symptom in influencing wait time will be different from the effect of having 3 symptoms versus 4 symptoms in determining wait time.  There were no missing data to recode for our analysis.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 kellydat$symptom = rep(0, length(kellydat$sn1))
@@ -105,21 +105,8 @@ Note that in our case, survival means that the patient still keeps waiting. The 
 # Modeling Approach
 
 
-## Generalized Linear Modeling without Kernel Regression
-
-Generalized linear modeling is a form of inference that abstracts linear regression so that the error distribution of the response variable does not have to be normal. In a generalized linear model, the linear predictor for the explanatory variables is related to the expected value of the response variable through the link function, which in this case is the log odds. We use the log odds as the link function because we are implementing logistic regression through the generalized linear model paradigm. The only relevant assumption made for our generalized linear model is the the wait times for patients are independent of each other, which we are comfortable making. We do not need to assume that the residuals are normally distributed or that they have equal variance. 
-
-To implement generalized linear modeling, we needed to transform the data into a discrete format suitable for applying this technique, while taking into account censoring. We divided the times into uneven bins, with the first six bins of width 0.5, the seventh and eighth bins of width 1, and the rest of the bins of width 5. We did this because most of the wait times are low, but the wait time distribution is also right skewed. We used a data transformation method suitable for generalized linear modeling that centered around classifying each wait time into one of these bins.
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
-# GLM without kernel
-data_pp <- read.table("processed.csv", header=TRUE)
-m1 = glm(assessment ~ p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p11 + p12 + p13 + male + black + hisp + sn1 + sn2 + sn3 + all4, data = data_pp)
-summary(m1)
-```
-
-Based on the summary of the generalized linear model without kernel regression, only one explanatory variable coefficient is significant, the binary variable of whether the patient has all four stroke symptoms or not. The rest of the explanatory variables do not have statistically significant effects on the wait time. 
-
 ## Generalized Linear Modeling with Kernel Regression
+
 
 Generalized linear modeling is a form of inference that abstracts linear regression so that the error distribution of the response variable does not have to be normal. In a generalized linear model, the linear predictor for the explanatory variables is related to the expected value of the response variable through the link function, which in this case is the log odds. We use the log odds as the link function because we are implementing logistic regression through the generalized linear model paradigm. The only relevant assumption made for our generalized linear model is the the wait times for patients are independent of each other, which we are comfortable making. We do not need to assume that the residuals are normally distributed or that they have equal variance. 
 
@@ -128,6 +115,7 @@ For this study, we used generalized linear modeling with kernel regression. Kern
 To implement generalized linear modeling, we needed to transform the data into a discrete format suitable for applying this technique, while also taking into account censoring. To do so, we divided up the wait times into bins of equal width, with one bin per time unit and 26 bins overall. We used fourteen kernels for the regression, and weighted the kernels for the lower bins (corresponding to the shorter wait times) more than the higher bins (corresponding to the longer wait times), because, again, more patients had shorter wait times until clinical assessment. 
 
 To test whether non-binary variables, such as number of symptoms, have a significant impact on wait time, we compared full models with the non-binary variables included to reduced models with the the non-binary variables excluded. If the full model was shown to be significant through ANOVA, then we concluded that the non-binary variables themselves were significant. We used this approach for the variable of clinical presentation, or the number of symptoms displayed. We did not do a full versus reduced model comparison for race, because we differentiated race (being black or not black) from ethnicity (being Hispanic or not Hispanic), thus keeping race and ethnicity binary. We first compared a full model with all explanatory variables included with a reduced model with the symptoms variable excluded. To evaluate the full versus reduced model, we used ANOVA based on the Chi-Squared likelihood ratio test, which is typically applied for comparing generalized linear models (Columbia Statistics). In all models, full and reduced, we included the kernel values.
+
 
 ```{r, echo= FALSE, warning = FALSE, message = FALSE}
 d = kellydat
@@ -236,9 +224,10 @@ dt_1 <- kernel.transformation(dt_1$nctdel, dt_1$fail, total_bins, dt_1)
 
 hazard.logodds.0 <- predict(m2, newdata = dt_0)
 hazard.0 <- exp(hazard.logodds.0)/(1+exp(hazard.logodds.0))
-
+hazard.female <- hazard.0
 hazard.logodds.1 <- predict(m2, newdata = dt_1)
 hazard.1 <- exp(hazard.logodds.1)/(1+exp(hazard.logodds.1))
+hazard.male <- hazard.1
 par(mar=c(4.5, 4.5, 0.5, 0.5))
 plot(1:length(hazard.0), hazard.0, type='l', ylim=range(c(0,1)), col = c('blue'),
      xlab = "Time Bin",
@@ -278,10 +267,10 @@ dt_1 <- kernel.transformation(dt_1$nctdel, dt_1$fail, total_bins, dt_1)
 
 hazard.logodds.0 <- predict(m2, newdata = dt_0)
 hazard.0 <- exp(hazard.logodds.0)/(1+exp(hazard.logodds.0))
-
+hazard.nonblack <- hazard.0
 hazard.logodds.1 <- predict(m2, newdata = dt_1)
 hazard.1 <- exp(hazard.logodds.1)/(1+exp(hazard.logodds.1))
-
+hazard.black <- hazard.1
 plot(1:length(hazard.0), hazard.0, type='l', ylim=range(c(0,1)), col = c('blue'),
      xlab = "Time Bin",
      ylab = "Hazard",
@@ -320,9 +309,10 @@ dt_1 <- kernel.transformation(dt_1$nctdel, dt_1$fail, total_bins, dt_1)
 
 hazard.logodds.0 <- predict(m2, newdata = dt_0)
 hazard.0 <- exp(hazard.logodds.0)/(1+exp(hazard.logodds.0))
-
+hazard.nonhisp <- hazard.0
 hazard.logodds.1 <- predict(m2, newdata = dt_1)
 hazard.1 <- exp(hazard.logodds.1)/(1+exp(hazard.logodds.1))
+hazard.hisp <- hazard.1
 par(mar=c(4.5, 4.5, 0.5, 0.5))
 plot(1:length(hazard.0), hazard.0, type='l', ylim=range(c(0,1)), col = c('blue'),
      xlab = "Time Bin",
@@ -432,18 +422,68 @@ title("Hazard Plot", outer=TRUE)
 
 In our models we see significance in the number of symptoms a patient has. This is evident in hazard plots above when comparing the levels of different explanatory variables. In each of the plots displayed, we plot a hazard curve for the different values of each predictor variable. We see that for Male, Black, and Hispanic, the different levels of the predictors result in very similar hazard curves that overlap heavily. This suggests that the different values of these predictors don't significantly affect the chance that a patient gets evaluated at any point in time. However, the hazard curve for a patient with 4 symptoms present is significantly different from the hazard curves for patients with 0-3 symptoms. This suggests that a patient displaying 4 symptoms has a higher chance at each point in time to be evaluated, and indicates that clinical presentation overall is a significant variable. Therefore, our hazard curves confirm what our models indicated about the significance of clinical presentation.
 
+We can similarly confirm the significance of variables using survival plots, which are built through a probability transformation of the hazard values from the plots above. Therefore we allow the variable being graphed in the surival plot to vary while fixing the other variables in the same configuration as for the hazard plots above. Again, we don't expect the survival curves to change much with different configurations of the fixed variables.
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+haz.to.surv = function(hazard){
+  mult <- 1
+  x.equals.t <- rep(0, length(hazard))
+  x.equals.t[1] <- hazard[1]
+  for (i in 2:length(hazard)){
+    mult <- mult*(1 - hazard[i-1])
+    x.equals.t[i] <- hazard[i]*mult 
+  }
+  survive <- rep(0, length(hazard))
+  for (j in 1:length(hazard)){
+    survive[j] <- sum(x.equals.t[j:length(x.equals.t)])
+  }
+  return(survive)
+}
+par(mfrow=c(2,2), oma=c(0,0,2,0))
+par(mar=c(4.5, 4.5, 0.5, 0.5))
+plot(1:length(hazard.female), haz.to.surv(hazard.female), type='l', ylim=range(c(0,1)), col = c('blue'),
+     xlab = "Time Bin",
+     ylab = "Survival",
+     lwd=2)
+lines(1:length(hazard.male), haz.to.surv(hazard.male), type='l', col = c('red'), lwd=2)
+legend(x=10, y=1, c("Female", "Male"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+
+plot(1:length(hazard.nonblack), haz.to.surv(hazard.nonblack), type='l', ylim=range(c(0,1)), col = c('blue'),
+     xlab = "Time Bin",
+     ylab = "Survival",
+     lwd=2)
+lines(1:length(hazard.black), haz.to.surv(hazard.black), type='l', col = c('red'), lwd=2)
+legend(x=8, y=1, c("Non-black", "Black"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+
+par(mar=c(4.5, 4.5, 0.5, 0.5))
+plot(1:length(hazard.nonhisp), haz.to.surv(hazard.nonhisp), type='l', ylim=range(c(0,1)), col = c('blue'),
+     xlab = "Time Bin",
+     ylab = "Survival",
+     lwd=2)
+lines(1:length(hazard.hisp), haz.to.surv(hazard.hisp), type='l', col = c('red'), lwd=2)
+legend(x=8,y=1, c("Non-hispanic", "Hispanic"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "red"))
+
+plot(1:length(hazard.0), haz.to.surv(hazard.0), type='l', ylim=range(c(0,1)), col = c('blue'),
+     xlab = "Time Bin",
+     ylab = "Survival",
+     lwd=2)
+lines(1:length(hazard.1), haz.to.surv(hazard.1), type='l', col = c('orange'), lwd=2)
+lines(1:length(hazard.2), haz.to.surv(hazard.2), type='l', col = c('red'), lwd=2)
+lines(1:length(hazard.3), haz.to.surv(hazard.3), type='l', col = c('green'), lwd=2)
+lines(1:length(hazard.4), haz.to.surv(hazard.4), type='l', col = c('yellow'), lwd=2)
+legend(x=16,y=1,cex = 0.6, c("0 symptom", "1 symptom", "2 symptoms", "3 symptoms", "4 symptoms"), lty=c(1,1), lwd=c(2.5,2.5),col=c("blue", "orange", "red", "green", "yellow"))
+title("Survival Plots", outer=TRUE) 
+```
+
+The survival plots show little separation between male and female, black and not black and Hispanic and non-Hispanic. These variables are therefore shown visually, once more, to be insignificant in influencing wait time. There is separation between the survival curves for symptoms displayed, indicating again that the variable of clinical presentation is significant.
 
 # Conclusions
 
-After an analysis of our Cox proportional hazard model, our generalized linear model created without kernel regression, and our generalized linear model generated with linear regression, we see that none of the predictors had any statistically significant correlation with the wait time until clinical assessment for a stroke, with a single exception. The predictors for wait time included whether or not the patient was black, whether or not the patient was Hispanic, whether the patient was male or female, and whether the patient displayed one, two, three, or four symptoms of a stroke. The only predictor with a statistically significant coefficient at an alpha of 0.05 was the variable for whether or not the patient displayed all four symptoms of a stroke, and this was only significant for the generalized linear model without kernel regression. The other models did not show statistical significance for the correlation of this explanatory variable with the wait time. We therefore conclude that none of the predictors in this study have an impact on the wait time until clinical assessment for a stroke, except for clinical presentation, which may have some effect when the patient displays all four symptoms of a stroke.
+We evaluated a set of three generalized linear models with kernel regression, where one model was considered the best, and the other two we used to show that selected explanatory variables were not statistically significant predictors of the wait time for stroke patients in the ER. Based on the analysis of these models, we found that the variables of gender, being black or not being black, and being Hispanic or non-Hispanic had no impact on the wait times of stroke patients. However, the variable of clinical presentation, or how many symptoms were displayed, did influence wait time in our model set.
 
 Although our models indicated that most of this study's explanatory variables were not significantly associated with wait time, this outcome may be a result of having too little data. For example, there were only nine Hispanic patients in this data set. If there had been more Hispanic patients, perhaps our models would have shown a statistically significant difference between the wait times of Hispanic and non-Hispanic patients. The problem of having too few observations affects the reliability of our results, but the only solution is to gather more data.
 
-Even though our models show that most explanatory variables have no statistically significant impact on wait times, this result has positive implications even though it may initially seem uninteresting. Based on our analysis, the predictors of race, ethnicity, and gender have no impact on wait times, indicating that the selection process for clinical assessment in the ER is non-discriminatory. The only factor that may be relevant in influencing wait time is whether or not the patient has all four symptoms of a stroke. We would expect and hope that a patient with more stroke symptoms would have to wait less time for a clinical assessment, because it is even more urgent that this patient see a doctor. We have found evidence that suggests that a patient with stroke symptoms need not worry about discrimination in the emergency room based on race, ethinicity, or gender, and the only variable that may impact wait time is the number of symptoms exhibited.
+Even though our models show that most explanatory variables have no statistically significant impact on wait times, this result has positive implications even though it may initially seem uninteresting. Based on our analysis, the predictors of race, ethnicity, and gender have no impact on wait times, indicating that the selection process for clinical assessment in the ER is non-discriminatory. The only factor that may be relevant in influencing wait time is the number of symptoms displayed by the patient. We would expect and hope that a patient with more stroke symptoms would have to wait less time for a clinical assessment, because it is even more urgent that this patient see a doctor. We have found evidence that suggests that a patient with stroke symptoms need not worry about discrimination in the emergency room based on race, ethinicity, or gender, and the only variable that may impact wait time is the number of symptoms exhibited.
 
-# Goals for Further Analysis
-
-In our next report, we hope to visualize the hazard curves for our models to better understand the process of waiting for a clinical assessment for a stroke. We also need to analyze different variations of each model to find the best fit. It may be that if we were to choose different kernel weights for our generalized linear model with kernel regression, the predictor of having all four symptoms of a stroke may show a statistically significant association with wait times in the ER. 
 
 # References
 "Introduction to Generalized Linear Models." \textit{STAT 504}, Eberly College of Science at Penn State, onlinecourses.science.psu.edu/stat504/node/216.  
@@ -453,4 +493,4 @@ In our next report, we hope to visualize the hazard curves for our models to bet
 
 
 # Contributions
-William and Wuming both helped transform the data for implementing the generalized linear model and the generalized linear model with kernel regression. Wuming and William wrote the code to use generalized linear models with and without kernel regression as well. Annie wrote the text for the conclusion and model approaches as well as analyzed the model.  
+William contributed generally to the code and the ideas underpinning the code, while also contributing to writing the model approach section. Wuming wrote the code for analyzing the models and creating the hazard plots, and helped interpret the results. Annie wrote parts of the model approach section, generated the survival plots, and wrote the conclusion.
