@@ -102,19 +102,8 @@ legend(11, 1.0, c("no symptom", "1 symptom", "2 symptoms", "3 symptoms", "4 symp
 Note that in our case, survival means that the patient still keeps waiting. The survival curves for males versus females look almost the same, suggesting that there is no significant difference in their chance of waiting at varied time. The survival curves for black patients versus non-black patients look a little different, with the probability of still waiting dropping off slightly more quickly for non-black patients as waiting time increases, but the difference is not substantial. There is a big difference between the survival curves for hispanic patients versus non-hispanic patients, but this difference may arise because there is so little data on hispanic patients. There seems to be large differences in the curves for the number of symptoms displayed, with most people having four symptoms being seen before about 2 time units, while people with no symptoms had a much less dramatic drop-off in the probability of still waiting, meaning that they were generally seen later. 
 
 
-# Modeling Approaches
+# Modeling Approach
 
-## Cox Proportional Hazards Model
-
-One modeling approach we can take is fitting a Cox proportional hazards model for survival time to the dataset. We can use this to measure the effect that each level of the predictor variables has on the time to neurological assessment. 
-
-```{r, echo=FALSE}
-d3 = Surv(kellydat$nctdel, kellydat$fail)
-cox = coxph(formula = d3 ~ black + male + hisp + symptom, data = kellydat)
-summary(cox)
-```
-
-An initial implementation of the model on all the predictors does not identify any of them as having a significant effect. We will use other modeling approaches, generalized linear modeling with and without kernel regression, to verify if indeed the variables of clinical presentation, race, ethnicity, and gender have no impact on the time until clinical assessment for patients in the ER who are displaying symptoms potentially indicative of a stroke.
 
 ## Generalized Linear Modeling without Kernel Regression
 
@@ -132,7 +121,13 @@ Based on the summary of the generalized linear model without kernel regression, 
 
 ## Generalized Linear Modeling with Kernel Regression
 
-To set up our generalized linear model with kernel regression, we first needed to transform the data in a similar fashion to the data conversion for our generalized linear modeling without kernel regression, but this time using bins of equal width for the wait times. We used seven kernels for the regression, and weighted the kernels for the lower bins (corresponding to the shorter wait times) more than the higher bins (corresponding to the longer wait times), because more patients had shorter wait times until clinical assessment. Again, we assume that the response variables for the patients are independent, and we don't need to check for normality or homoscedacity of the residuals for this model.
+Generalized linear modeling is a form of inference that abstracts linear regression so that the error distribution of the response variable does not have to be normal. In a generalized linear model, the linear predictor for the explanatory variables is related to the expected value of the response variable through the link function, which in this case is the log odds. We use the log odds as the link function because we are implementing logistic regression through the generalized linear model paradigm. The only relevant assumption made for our generalized linear model is the the wait times for patients are independent of each other, which we are comfortable making. We do not need to assume that the residuals are normally distributed or that they have equal variance. 
+
+For this study, we used generalized linear modeling with kernel regression. Kernel regression is a non-parametric method that allows for flexible, non-linear regression by iteratively fitting the model within regions of the domain called kernels, where the set of kernels spans the entire domain. Kernel regression better models the differences in the data along the domain, especially when more data points are clustered in some areas of the domain and not in others. This is the case for our data, where most wait times are below 3 but can go up to around 26. 
+
+To implement generalized linear modeling, we needed to transform the data into a discrete format suitable for applying this technique, while also taking into account censoring. To do so, we divided up the wait times into bins of equal width, with one bin per time unit and 26 bins overall. We used fourteen kernels for the regression, and weighted the kernels for the lower bins (corresponding to the shorter wait times) more than the higher bins (corresponding to the longer wait times), because, again, more patients had shorter wait times until clinical assessment. 
+
+To test whether non-binary variables, such as number of symptoms, have a significant impact on wait time, we compared full models with the non-binary variables included to reduced models with the the non-binary variables excluded. If the full model was shown to be significant through ANOVA, then we concluded that the non-binary variables themselves were significant. We used this approach for the variable of clinical presentation, or the number of symptoms displayed. We did not do a full versus reduced model comparison for race, because we differentiated race (being black or not black) from ethnicity (being Hispanic or not Hispanic), thus keeping race and ethnicity binary. We first compared a full model with all explanatory variables included with a reduced model with the symptoms variable excluded. To evaluate the full versus reduced model, we used ANOVA based on the Chi-Squared likelihood ratio test, which is typically applied for comparing generalized linear models (Columbia Statistics). In all models, full and reduced, we included the kernel values.
 
 ```{r, echo= FALSE, warning = FALSE, message = FALSE}
 d = kellydat
@@ -197,9 +192,18 @@ m3 <- glm(y ~ 0 + X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9 + X10 + X11 + X12 +
 m4 <- glm(y ~ 0 + X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9 + X10 + X11 + X12 + X13 + X14 + sn0 + sn1 + sn2 + sn3 + all4, data=d2, family="binomial")
 # Full vs Reduced for symptoms
 anova(m2,m3,test="Chisq")
+```
+
+Based on the ANOVA results for the Chi-squared likelihood ratio test, the full model is statistically significant at an alpha of 0.05, meaning that the variable of number of symptoms displayed is significant in explaining wait times. Looking at the summary of the full model, (shown above the output for the ANOVA) we see that all the other explanatory variables, such as gender, whether or not the patient was hispanic, and whether or not the patient was black, had coefficients that were not statistically significant. Thus, these variables do not impact wait time. We considered this result and decided to compare the full model, including all the the binary explanatory variables and the clinical presentation variable, to a different reduced model, which contained just the clinical presentation variable but not the other explanatory variables, hypothesizing that this new reduced model could be regarded as the better model.
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 # Full vs Reduced for black male and hisp
 anova(m2,m4,test="Chisq")
+```
 
+The results of this Chi-squared likelihood ratio ANOVA test show that the full model, including all the binary and non-binary explanatory variables, is not significant at an alpha of 0.05 when compared to the reduced model with only the clinical presentation variable included. We can surmise from these results that the reduced model is better than the full model. Therefore, including only the variables showing number of symptoms displayed as well as the kernel values produces the best model overall.
+
+We next graph the hazard plots for each of the variables, while fixing the other variables that aren't the subject of the plot to arbitrary values. We expect the hazard plots generated from fixing different values of variables that aren't the focus to be similar, so we only graph hazard plots for one configuration of the fixed variables. 
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
 ## Hazard Plot Male vs. Female for Non-black and Non-hispanic
 par(mfrow=c(2,2), oma=c(0,0,2,0))
 dt_0 <- d[1,]
@@ -425,11 +429,9 @@ legend(x=16,y=1,cex = 0.6, c("0 symptom", "1 symptom", "2 symptoms", "3 symptoms
 title("Hazard Plot", outer=TRUE) 
 
 ```
-Based on the summary of the generalized linear model with kernel regression, none of the coefficients for the explanatory variables of race, ethnicity, gender, or number of symptoms are significant, contrasting with the results for the generalized linear model without kernel regression. 
 
-However, we do see significance in the number of symptoms a patient has when all 4 symptoms are present. This is evident in hazard plots above comparing the levels of different explanatory variables. In each of the plots above, we plot a hazard curve for the different values of each predictor variable. We see that for Male, Black, and Hispanic, the different levels of the predictors result in very similar hazard curves that overlap heavily. This suggests that the different values of these predictors don't significantly affect the chance that a patient gets evaluated at any point in time. However, the hazard curve for a patient with 4 symptoms present is significantly different from the hazard curves for patients with 0-3 symptoms. This suggests that a patient displaying 4 symptoms has a higher chance at each point in time to be evaluated.
+In our models we see significance in the number of symptoms a patient has. This is evident in hazard plots above when comparing the levels of different explanatory variables. In each of the plots displayed, we plot a hazard curve for the different values of each predictor variable. We see that for Male, Black, and Hispanic, the different levels of the predictors result in very similar hazard curves that overlap heavily. This suggests that the different values of these predictors don't significantly affect the chance that a patient gets evaluated at any point in time. However, the hazard curve for a patient with 4 symptoms present is significantly different from the hazard curves for patients with 0-3 symptoms. This suggests that a patient displaying 4 symptoms has a higher chance at each point in time to be evaluated, and indicates that clinical presentation overall is a significant variable. Therefore, our hazard curves confirm what our models indicated about the significance of clinical presentation.
 
-For the plots above, we fixed the predictors not being plotted as arbitrary values. However, fixing the other variables to different values also produces similar results.
 
 # Conclusions
 
@@ -445,6 +447,8 @@ In our next report, we hope to visualize the hazard curves for our models to bet
 
 # References
 "Introduction to Generalized Linear Models." \textit{STAT 504}, Eberly College of Science at Penn State, onlinecourses.science.psu.edu/stat504/node/216.  
+
+“Generalized Linear Models.” \textit{Columbia Statistics}, Columbia University. 
 
 
 
